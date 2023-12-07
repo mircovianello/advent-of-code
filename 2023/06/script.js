@@ -8,78 +8,36 @@ const input = fs
 
 // == PART 1 ==
 
+// Function to calculate a result based on input data.
 function part1(input) {
-  return (
-    input
-      // Split the input by "/\n\n/" pattern, representing double line breaks
-      .split("/\n\n/")
-      .flatMap((doubleLine) => {
-        // Extract 'times' and 'distances' from the matched pattern in doubleLine
-        let [, times, distances] = doubleLine
-          .match(/^Time:\s+(.*)\nDistance:\s+(.*)$/)
-          // Extract and map numbers, trimming and converting them to numbers
-          .map((numbers) => numbers.trim().split(/\s+/g).map(Number));
+  // Destructure the input array into 'times' and 'recordDistances'.
+  let [times, recordDistances] = input
+    .split("\n") // Split the input string by newline character.
+    .map((line) => [...line.matchAll(/\d+/g)].map(Number)); // Extract numbers from each line.
 
-        const races = [];
-        // Create race objects with time, distance, and wayCount properties
-        for (let i = 0; i < times.length; i++) {
-          races.push({
-            time: times[i],
-            distance: distances[i],
-            wayCount: 0,
-          });
-        }
+  // Calculate the result using the 'times' array.
+  return times.reduce((product, time, i) => {
+    let recordDistance = recordDistances[i];
 
-        return races; // Return an array of race objects
-      })
-      .map(({ time, distance }, index, races) => {
-        // Calculate wayCount for each race based on the given condition
-        for (let i = 1; i <= time; i++) {
-          if (i * (time - i) > distance) races[index].wayCount += 1;
-        }
-        return races[index].wayCount; // Return an array of wayCounts
-      })
-      .reduce((total, ways) => total * ways) // Multiply all wayCounts to get the final result
-  );
+    let recordBeaten = 0;
+    // Check for how many times the record has been beaten based on time and distance.
+    for (let hold = 1; hold < time; hold++) {
+      if (hold * (time - hold) > recordDistance) {
+        recordBeaten++;
+      }
+    }
+
+    // Multiply the running product with the number of records beaten for each time.
+    return product * recordBeaten;
+  }, 1); // Initial value of the product is 1.
 }
 
 // == PART 2 ==
 
+// Function to manipulate input and call part1 function.
 function part2(input) {
-  return (
-    input
-      // Split the input by "/\n\n/" pattern, representing double line breaks
-      .split("/\n\n/")
-      .flatMap((doubleLine) => {
-        // Extract 'times' and 'distances' from the matched pattern in doubleLine
-        let [, times, distances] = doubleLine
-          .match(/^Time:\s+(.*)\nDistance:\s+(.*)$/)
-          // Extract, trim, remove whitespaces, and convert numbers to an array
-          .map((numbers) =>
-            numbers.trim().replace(/\s/g, "").split(/\s+/g).map(Number)
-          );
-
-        const races = [];
-        // Create race objects with time, distance, and wayCount properties
-        for (let i = 0; i < times.length; i++) {
-          races.push({
-            time: times[i],
-            distance: distances[i],
-            wayCount: 0,
-          });
-        }
-
-        return races; // Return an array of race objects
-      })
-      .map(({ time, distance }, index, races) => {
-        // Calculate wayCount for each race based on the given condition
-        for (let i = 1; i <= time; i++) {
-          if (i * (time - i) > distance) races[index].wayCount += 1;
-        }
-        return races[index].wayCount; // Return an array of wayCounts
-      })
-      .reduce((total, ways) => total * ways)
-  ); // Multiply all wayCounts to get the final result
+  // Replace all spaces in the input string.
+  return part1(input.replaceAll(" ", ""));
 }
 
 // == ASSERTS ==
