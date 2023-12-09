@@ -51,7 +51,6 @@ function part2(input) {
 
   // Get all nodes that end with "A" as initial current nodes.
   let currentNodes = Object.keys(nodes).filter((e) => e.endsWith("A"));
-  console.log(currentNodes);
   let leastSteps = [];
 
   // Perform a loop until there are no more current nodes.
@@ -87,7 +86,7 @@ function part2(input) {
   function leastCommonMultiple(a, b) {
     return (a * b) / greatestCommonDivisor(a, b);
   }
-  console.log(leastSteps);
+
   // Calculate and return the least common multiple of all recorded leastSteps values.
   return leastSteps.reduce(leastCommonMultiple);
 }
